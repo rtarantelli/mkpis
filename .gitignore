@@ -1,3 +1,4 @@
+/cmd/cli
 .env
 .vscode
 .github

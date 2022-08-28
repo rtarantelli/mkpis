@@ -57,6 +57,7 @@ func (u CmdUI) Render(from, to time.Time) error {
 	if err != nil {
 		return err
 	}
+
 	rrb, err := u.getReleaseBranchReport(from, to)
 	if err != nil {
 		return err
@@ -67,10 +68,13 @@ func (u CmdUI) Render(from, to time.Time) error {
 
 	fmt.Println("\033[2J") //clean previous ouput
 	u.PrintPageHeader(from, to)
+
 	u.PrintRepotHeader("Feature Branch Report")
 	fmt.Println(rfb)
+
 	u.PrintRepotHeader("Release Branch Report")
 	fmt.Println(rrb)
+
 	return nil
 }
 
@@ -140,15 +144,29 @@ func (u CmdUI) getReleaseBranchReport(from, to time.Time) (string, error) {
 
 	tableString := &strings.Builder{}
 	table := tablewriter.NewWriter(tableString)
-	table.SetHeader([]string{"PR", "Commits", "Size", "PR Lead Time", "Time To Merge"})
+	table.SetHeader([]string{
+		"PR",
+		"CreatedAt",
+		"Author",
+		"Commits",
+		"Size",
+		"PR Lead Time",
+		"Time To Merge",
+		"PR Lead Time Days",
+		"Time To Merge Days",
+	})
 
 	for _, pr := range prs {
 		table.Append([]string{
 			strconv.Itoa(pr.Number),
+			pr.CreatedAt.String(),
+			pr.Author,
 			strconv.Itoa(pr.Commits),
 			strconv.Itoa(pr.ChangedLines),
 			DurationFormater(pr.PRLeadTime()),
 			DurationFormater(pr.TimeToMerge()),
+			fmt.Sprintf("%.2f", pr.PRLeadTime().Hours()/24),
+			fmt.Sprintf("%.2f", pr.TimeToMerge().Hours()/24),
 		})
 
 	}
@@ -157,10 +175,14 @@ func (u CmdUI) getReleaseBranchReport(from, to time.Time) (string, error) {
 
 	table.SetFooter([]string{
 		fmt.Sprintf("Count: %d", kpi.CountPR()),
+		"",
+		fmt.Sprintf("Authors: %d", kpi.CountAuthors()),
 		fmt.Sprintf("AVG: %.2f", kpi.AvgCommits()),
 		fmt.Sprintf("AVG: %.2f", kpi.AvgChangedLines()),
 		AvgDurationFormater(kpi.AvgPRLeadTime()),
 		AvgDurationFormater(kpi.AvgTimeToMerge()),
+		"",
+		"",
 	}) // Add Footer
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.SetBorder(false)

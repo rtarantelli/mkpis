@@ -74,6 +74,7 @@ func (kpi *KPICalculator) AvgCommits() float64 {
 func (kpi *KPICalculator) AvgChangedLines() float64 {
 	return averageInt(kpi.changes)
 }
+
 func (kpi *KPICalculator) AvgTimeToMerge() time.Duration {
 	return averageDuration(kpi.timeToMerge)
 }
@@ -81,16 +82,33 @@ func (kpi *KPICalculator) AvgTimeToMerge() time.Duration {
 func (kpi *KPICalculator) AvgTimeToReview() time.Duration {
 	return averageDuration(kpi.timeToReview)
 }
+
 func (kpi *KPICalculator) AvgTimeToFirstReview() time.Duration {
 	return averageDuration(kpi.timeToFirstReview)
 }
+
 func (kpi *KPICalculator) AvgLastReviewToMerge() time.Duration {
 	return averageDuration(kpi.lastReviewToMerge)
 }
+
 func (kpi *KPICalculator) AvgPRLeadTime() time.Duration {
 	return averageDuration(kpi.pRLeadTime)
 }
 
 func (kpi *KPICalculator) AvgReviews() float64 {
 	return averageInt(kpi.reviews)
+}
+
+func (kpi *KPICalculator) CountAuthors() int {
+	keys := make(map[string]bool)
+	list := []string{}
+
+	for _, pr := range kpi.prs {
+		if _, value := keys[pr.Author]; !value {
+			keys[pr.Author] = true
+			list = append(list, pr.Author)
+		}
+	}
+
+	return len(list)
 }

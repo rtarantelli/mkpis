@@ -7,6 +7,7 @@ type Client interface {
 }
 
 type PR struct {
+	Author         string
 	Number         int
 	CreatedAt      time.Time
 	MergedAt       time.Time

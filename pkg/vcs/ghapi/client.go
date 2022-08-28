@@ -132,6 +132,7 @@ pagination:
 		fc, lc := cli.getFirstAndLastCommitTime(owner, repo, pr.GetNumber())
 		fr, lr := cli.getFirstAndLastReviewCommentTime(owner, repo, pr.GetNumber())
 		pRList = append(pRList, vcs.PR{
+			Author:         pr.GetUser().GetLogin(),
 			Number:         pr.GetNumber(),
 			CreatedAt:      pr.GetCreatedAt(),
 			MergedAt:       pr.GetMergedAt(),
